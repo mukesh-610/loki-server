@@ -1,0 +1,37 @@
+{% extends "loki_c2/base.html" %}
+{% block content %}
+    <div class="container py-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Job Report: {{ uuid }}</li>
+            </ol>
+        </nav>
+        <h2>Previous Job Reports for <code>{{ uuid }}</code></h2>
+        <div class="accordion">
+            {% for report in reports %}
+                <div class="accordion-item" id="accordionExample">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                        <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse"
+                                data-mdb-target="#collapse{{ forloop.counter }}" aria-expanded="false"
+                                aria-controls="collapse{{ forloop.counter }}">
+                            Job ID {{ report.job_id }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse hide"
+                         aria-labelledby="heading{{ forloop.counter }}" data-mdb-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="pt-3 pb-2 ps-3" style="background-color: #f7f7f9">
+                                {% if report.output|length > 0 %}
+                                    <pre><code>{{ report.output }}</code></pre>
+                                {% else %}
+                                    <pre><code>No Output</code></pre>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

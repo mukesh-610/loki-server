@@ -1,0 +1,55 @@
+{% extends "loki_c2/base.html" %}
+{% block content %}
+<div class="py-3 w-50 mx-auto">
+    <h2 class="text-center">Create A New Job</h2>
+    <form id="shellcode-form" novalidate spellcheck="false">
+        <div class="form-outline mb-3">
+            <textarea class="form-control" id="code" rows="10" required></textarea>
+            <label for="code" class="form-label">Code in hexadecimal format</label>
+            <div class="invalid-feedback">Please provide valid code in hex format.</div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-4 offset-lg-4">
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+    <script>
+        const form = document.getElementById('shellcode-form');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            form.classList.add('was-validated');
+            if (form.checkValidity()) {
+                let shellcode = document.getElementById('code').value.trim().replaceAll(' ', ''), str = '';
+                for (let i = 0; i < shellcode.length; i += 2)
+                    str += String.fromCharCode(parseInt(shellcode.substr(i, 2), 16));
+
+                let encoded = btoa(str);
+                console.log('Final encoding output:', encoded);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/jobs/create', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 201) {
+                        let response = JSON.parse(this.responseText);
+                        window.alert('Job created with ID: ' + response['job_id']);
+                        window.location = '/';
+                    }
+                };
+                xhr.send(JSON.stringify({'code': encoded}));
+            }
+        });
+        document.getElementById('code').addEventListener('change', function(e) {
+            const hexRegex = new RegExp('^([0-9a-fA-F]{2})+$'), shellcode = e.target.value.trim().replaceAll(' ', '');
+            if (!hexRegex.test(shellcode)) {
+                e.target.setCustomValidity('error');
+                return;
+            }
+            e.target.setCustomValidity('');
+        });
+    </script>
+{% endblock %}

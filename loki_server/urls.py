@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('loki.urls')),
+    path('', include('loki_c2.urls')),
 ]

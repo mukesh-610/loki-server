@@ -6,9 +6,10 @@ class Client(models.Model):
 
 
 class Job(models.Model):
-    code = models.TextField()
+    code = models.BinaryField()
 
 
 class JobReport(models.Model):
-    client_uuid = models.OneToOneField(Client, on_delete=models.CASCADE, primary_key=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
     output = models.TextField()
